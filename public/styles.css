@@ -1,53 +1,69 @@
+.hdsBody {
+  display: block;
+  padding: 2vh;
+  background-color: black;
+}
+
 .statusDisplay {
-    text-align: center;
+  text-align: center;
 }
 
 .statusImage {
-    height: 100px;
+  height: 100px;
 }
 
 .dataDisplay {
-    text-align: center;
-    display: none; /* When disconnected (that is the initial state) */
-}
-
-.hr {
-    /* Uncomment to disable heart rate display */
-    /*display: none;*/
+  text-align: center;
+  display: none; /* When disconnected (that is the initial state) */
 }
 
 .hrText {
-    color: white; /* Heart rate text color */
-    font-family: Arial, sans-serif; /* Heart rate text font */
-    -webkit-text-stroke: 1px black; /* Heart rate text outline. Remove for no outline. */
-
-    font-size: 550%;
-    position: relative;
-    top: -17px;
-    left: 15px;
+  color: white; /* Heart rate text color */
+  font-family: Arial, sans-serif; /* Heart rate text font */
+  -webkit-text-stroke: 1px black; /* Heart rate text outline. Remove for no outline. */
+  font-size: 16vh;
+  margin-left: 6vw;
 }
 
 .hrImage {
-    width: 100px;
-}
-
-.cal {
-    /* Uncomment to disable calories display */
-    /*display: none;*/
+  width: 12vh;
+  height: 12vh;
 }
 
 .calText {
-    color: white; /* Calories text color */
-    font-family: Arial, sans-serif; /* Calories text font */
-    -webkit-text-stroke: 1px black; /* Calories text outline. Remove for no outline. */
-
-    font-size: 550%;
-    position: relative;
-    top: -17px;
-    left: 15px;
+  color: white; /* Calories text color */
+  font-family: Arial, sans-serif; /* Calories text font */
+  -webkit-text-stroke: 1px black; /* Calories text outline. Remove for no outline. */
+  font-size: 10vh;
+  margin-left: 5vw;
 }
 
 .calImage {
-    width: 100px;
-    padding-left: 70px;
+  width: 7.5vh;
+  height: 7.5vh;
+}
+
+.upperPart {
+  height: 48vh;
+  display: flex;
+
+  flex-direction: column;
+}
+
+.bottomPart {
+  height: 48vh;
+  display: flex;
+}
+
+.hr {
+  align-items: center;
+  justify-content: center;
+  display: flex;
+  flex: 1;
+}
+.cal {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }

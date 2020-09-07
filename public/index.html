@@ -1,21 +1,26 @@
-<!doctype html>
+<!DOCTYPE html>
 <html>
-<script src="socketClient.js"></script>
-<head>
-    <link rel="stylesheet" href="styles.css">
-</head>
-<body>
+  <script src="socketClient.js"></script>
+  <head>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body class="hdsBody">
+    <div id="statusDisplay" class="statusDisplay">
+      <img class="statusImage" src="disconnected.png" />
+    </div>
 
-<div id="statusDisplay" class="statusDisplay">
-    <img class="statusImage" src="disconnected.png"/>
-</div>
-
-<div id="dataDisplay" class="dataDisplay">
-    <img id="hrImage" class="hr hrImage" src="hrImage.png"/>
-    <span id="heartRate" class="hr hrText">-</span>
-    <img id="calImage" class="cal calImage" src="calImage.png"/>
-    <span id="calories" class="cal calText">-</span>
-</div>
-
-</body>
+    <div id="dataDisplay" class="dataDisplay">
+      <div class="upperPart">
+        <div class="hr">
+          <img id="hrImage" class="hrImage" src="hrImage.png" />
+          <span id="heartRate" class="hrText">-</span>
+        </div>
+        <div class="cal">
+          <img id="calImage" class="calImage" src="calImage.png" />
+          <span id="calories" class="calText">-</span>
+        </div>
+      </div>
+      <div class="bottomPart"></div>
+    </div>
+  </body>
 </html>
