@@ -6,8 +6,9 @@ function connect() {
     "ws://" + config.websocketIp + ":" + config.websocketPort
   );
 
-  let statusDisplay = null;
-  let dataDisplay = null;
+    let statusDisplay = null;
+    let dataDisplay = null;
+    let caloriesDisplay = null;
 
   let heartRateText = null;
   let caloriesText = null;
@@ -15,8 +16,12 @@ function connect() {
   socket.onopen = function (event) {
     console.log("Connected to server on port: " + config.websocketPort);
 
-    statusDisplay = document.getElementById("statusDisplay");
-    dataDisplay = document.getElementById("dataDisplay");
+        // Identify as a web client to the server
+        socket.send('webClient');
+
+        statusDisplay = document.getElementById('statusDisplay');
+        dataDisplay = document.getElementById('dataDisplay');
+        caloriesDisplay = document.getElementById('caloriesDisplay');
 
     heartRateText = document.getElementById("heartRate");
     caloriesText = document.getElementById("calories");
@@ -60,10 +65,16 @@ function connect() {
       heartRateText.textContent = data[1];
     }
 
-    if (data[0] === "calories") {
-      caloriesText.textContent = data[1];
-    }
-  };
+        if (data[0] === 'calories') {
+            let calories = data[1];
+            caloriesText.textContent = calories;
+            if (calories === '0') {
+                caloriesDisplay.style.display = 'none';
+            } else {
+                caloriesDisplay.style.display = 'inline';
+            }
+        }
+    };
 }
 
 // Request the config from the server

@@ -13,8 +13,12 @@
 }
 
 .dataDisplay {
-  text-align: center;
-  display: none; /* When disconnected (that is the initial state) */
+    text-align: center;
+    display: none; /* When disconnected (that is the initial state) */
+}
+
+.hr {
+    display: inline;
 }
 
 .hrText {
@@ -36,6 +40,10 @@
   -webkit-text-stroke: 1px black; /* Calories text outline. Remove for no outline. */
   font-size: 10vh;
   margin-left: 5vw;
+}
+  
+.cal {
+    display: none;
 }
 
 .calImage {

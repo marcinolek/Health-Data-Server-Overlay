@@ -1,4 +1,4 @@
-const version = '6.3.0'; // Make sure this matches the version in package.json
+const version = '7.2.0'; // Make sure this matches the version in package.json
 
 const WebSocket = require('ws');
 const express = require('express');
@@ -46,6 +46,31 @@ if (typeof config.calImageFile !== 'undefined') {
     config.calImage = 'data:image/png;base64, ' + base64_encode(path.dirname(process.execPath) + '/' + config.calImageFile)
 }
 
+// Collect and show the possible IP addresses of this machine
+const { networkInterfaces } = require('os');
+
+const nets = networkInterfaces();
+const results = Object.create(null); // or just '{}', an empty object
+
+for (const name of Object.keys(nets)) {
+    for (const net of nets[name]) {
+        // skip over non-ipv4 and internal (i.e. 127.0.0.1) addresses
+        if (net.family === 'IPv4' && !net.internal) {
+            if (!results[name]) {
+                results[name] = [];
+            }
+
+            results[name].push(net.address);
+        }
+    }
+}
+console.log('Possible IP addresses of this machine:')
+for (const [adapterName, addresses] of Object.entries(results)) {
+    for (const address of addresses) {
+        console.log('\t' + adapterName + ': ' + address);
+    }
+}
+
 // Check for updates
 request('https://git.io/JJ8uD', {json: true}, (err, res, body) => {
     if (err) {
@@ -77,14 +102,20 @@ let server = app.listen(config.httpPort, function () {
 });
 
 let wss = new WebSocket.Server({port: config.websocketPort});
-let clients = [];
+let webClients = [];
 wss.on('listening', function () {
     console.log('WebSocket server started on port %s', config.websocketPort);
-    console.log('WebSocket clients will connect to %s', config.websocketIp)
+    console.log('WebSocket clients will connect to %s', config.websocketIp);
 });
 wss.on('connection', function connection(ws) {
-    clients.push(ws);
-    console.log('WebSocket client connected (' + ws._socket.remoteAddress + ')');
+    ws.on('message', function incoming(message) {
+        if (message === 'webClient') {
+            webClients.push(ws);
+            console.log('WebSocket web client connected (' + ws._socket.remoteAddress + ')');
+        } else {
+            sendDataToWebClients(message);
+        }
+    });
 });
 
 let DiscordRPC = require('discord-rpc');
@@ -96,40 +127,38 @@ let startTimestamp = Date.now();
 let currentHeartRate = '-'
 let currentCalories = '-'
 
-app.post('/', function (req, res) {
-    console.log(req.body);
+function sendDataToWebClients(data) {
+    console.log(data)
 
     // Remove disconnected clients
-    clients.filter(client => client.readyState === WebSocket.CLOSED).forEach(disconnectedClient => {
+    webClients.filter(client => client.readyState === WebSocket.CLOSED).forEach(disconnectedClient => {
         console.log('WebSocket client disconnected (' + disconnectedClient._socket.remoteAddress + ')');
-        clients = clients.filter(client => client !== disconnectedClient);
+        webClients = webClients.filter(client => client !== disconnectedClient);
     });
 
-    let heartRate = req.body.heartRate;
-    let calories = req.body.calories;
+    webClients.forEach(client => {
+        client.send(data);
+    });
 
-    if (typeof heartRate !== 'undefined') {
-        clients.forEach(client => {
-            client.send('heartRate:' + heartRate);
-        });
-        currentHeartRate = heartRate
+    let dataType = data.split(':')[0];
+    let dataValue = data.split(':')[1];
+    if (dataType === 'heartRate') {
+        currentHeartRate = dataValue;
+    } else if (dataType === 'calories') {
+        currentCalories = dataValue;
     }
 
-    if (typeof calories !== 'undefined') {
-        clients.forEach(client => {
-            client.send('calories:' + calories);
-        });
-        currentCalories = calories
+    let detailsString = 'HR: ' + currentHeartRate
+    if (currentCalories !== '0') {
+        detailsString += ', CAL: ' + currentCalories
     }
 
     // Eat errors because the user probably doesn't care
     discordRpc.setActivity({
-        details: 'HR: ' + currentHeartRate + ', CAL: ' + currentCalories,
+        details: detailsString,
         state: 'git.io/JfMAZ',
         startTimestamp: startTimestamp,
         largeImageKey: 'hds_icon',
     }).catch(error => {
     });
-
-    res.end();
-});
+}
