@@ -1,1 +1,1 @@
-pkg package.json --out-path output
+pkg package.json --target linux --out-path output
